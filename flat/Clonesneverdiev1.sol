@@ -1503,7 +1503,9 @@ contract ClonesNeverDieV1 is ERC721, ERC721Enumerable, Pausable, Ownable, ERC721
 	address public devAddress;
 	address public mintContract;
 	address public freezeContract;
+	address public proxyContract;
 
+	mapping(uint256 => uint256) public transferBlockNumber;
 	mapping(address => bool) public blacklist;
 	mapping(uint256 => bool) public freeze;
 
@@ -1545,6 +1547,7 @@ contract ClonesNeverDieV1 is ERC721, ERC721Enumerable, Pausable, Ownable, ERC721
     require(!freeze[tokenId], "This token is frozen");
 		require(!blacklist[from] && !blacklist[to], "BLACKLIST");
 		_transfer(from, to, tokenId);
+		transferBlockNumber[tokenId] = block.number;
 	}
 
 	function safeTransferFrom(
@@ -1557,6 +1560,7 @@ contract ClonesNeverDieV1 is ERC721, ERC721Enumerable, Pausable, Ownable, ERC721
     require(!freeze[tokenId], "This token is frozen");
 		require(!blacklist[from] && !blacklist[to], "BLACKLIST");
 		_safeTransfer(from, to, tokenId, _data);
+		transferBlockNumber[tokenId] = block.number;
 	}
 
 	function pause() public onlyDev {
@@ -1583,6 +1587,10 @@ contract ClonesNeverDieV1 is ERC721, ERC721Enumerable, Pausable, Ownable, ERC721
 		freezeContract = _ca;
 	}
 
+	function setProxyContract(address _ca) public onlyDev {
+		proxyContract = _ca;
+	}
+
 	function setBlacklist(address user, bool status) external onlyDev {
 		blacklist[user] = status;
 		emit SetBlacklist(user, status);
@@ -1591,6 +1599,13 @@ contract ClonesNeverDieV1 is ERC721, ERC721Enumerable, Pausable, Ownable, ERC721
 	function setFreeze(uint256 tokenId, bool status) public onlyFreezer {
 		freeze[tokenId] = status;
 		emit SetFreeze(tokenId, status);
+	}
+
+	function isApprovedForAll(address _owner, address _operator) public view override returns (bool isOperator) {
+		if (_operator == proxyContract) {
+			return true;
+		}
+		return ERC721.isApprovedForAll(_owner, _operator);
 	}
 
 	function _baseURI() internal view override returns (string memory) {
