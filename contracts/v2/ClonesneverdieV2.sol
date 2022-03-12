@@ -26,8 +26,9 @@ contract ClonesNeverDieV2 is ERC721, ERC721Enumerable, Pausable, Ownable, ERC721
 
 	Counters.Counter private _tokenIdCounter;
 
-	constructor(address _dev) ERC721("Clones Never Die V2", "CNDV2") {
-    setDevAddress(_dev);
+	constructor(address _dev, string memory _uri) ERC721("Clones Never Die V2", "CNDV2") {
+		setDevAddress(_dev);
+		setBaseURI(_uri);
 	}
 
 	modifier onlyDev() {
@@ -58,7 +59,7 @@ contract ClonesNeverDieV2 is ERC721, ERC721Enumerable, Pausable, Ownable, ERC721
 		uint256 tokenId
 	) public virtual override {
 		require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
-    require(!freeze[tokenId], "This token is frozen");
+		require(!freeze[tokenId], "This token is frozen");
 		require(!blacklist[from] && !blacklist[to], "BLACKLIST");
 		_transfer(from, to, tokenId);
 		transferBlockNumber[tokenId] = block.number;
@@ -71,7 +72,7 @@ contract ClonesNeverDieV2 is ERC721, ERC721Enumerable, Pausable, Ownable, ERC721
 		bytes memory _data
 	) public virtual override {
 		require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721: transfer caller is not owner nor approved");
-    require(!freeze[tokenId], "This token is frozen");
+		require(!freeze[tokenId], "This token is frozen");
 		require(!blacklist[from] && !blacklist[to], "BLACKLIST");
 		_safeTransfer(from, to, tokenId, _data);
 		transferBlockNumber[tokenId] = block.number;
@@ -85,7 +86,7 @@ contract ClonesNeverDieV2 is ERC721, ERC721Enumerable, Pausable, Ownable, ERC721
 		_unpause();
 	}
 
-  function setDevAddress(address _devAddress) public onlyOwner {
+	function setDevAddress(address _devAddress) public onlyOwner {
 		devAddress = _devAddress;
 	}
 
@@ -97,7 +98,7 @@ contract ClonesNeverDieV2 is ERC721, ERC721Enumerable, Pausable, Ownable, ERC721
 		mintContract = _ca;
 	}
 
-  function setFreezeContract(address _ca) public onlyDev {
+	function setFreezeContract(address _ca) public onlyDev {
 		freezeContract = _ca;
 	}
 

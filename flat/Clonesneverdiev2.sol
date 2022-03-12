@@ -1511,8 +1511,9 @@ contract ClonesNeverDieV2 is ERC721, ERC721Enumerable, Pausable, Ownable, ERC721
 
 	Counters.Counter private _tokenIdCounter;
 
-	constructor(address _dev) ERC721("Clones Never Die V2", "CNDV2") {
+	constructor(address _dev, string memory _uri) ERC721("Clones Never Die V2", "CNDV2") {
     setDevAddress(_dev);
+		setBaseURI(_uri);
 	}
 
 	modifier onlyDev() {
