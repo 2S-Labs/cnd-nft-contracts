@@ -22,6 +22,10 @@ module.exports = {
       url: "https://rpc-mumbai.maticvigil.com",
       accounts: [process.env.TestPK || ""],
     },
+    klaytn: {
+      url: "https://klaytn01.fandom.finance",
+      accounts: [process.env.TestPK || ""],
+    },
   },
   abiExporter: {
     path: "./abi",
