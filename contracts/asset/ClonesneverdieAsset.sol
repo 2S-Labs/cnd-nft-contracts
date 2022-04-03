@@ -56,22 +56,18 @@ contract ClonesNeverDieAsset is Context, ERC1155, Ownable, Pausable, ERC1155Burn
 		address account,
 		uint256 id,
 		uint256 amount,
-		bytes memory data,
-		uint256 _type
+		bytes memory data
 	) public onlyMinter {
 		_mint(account, id, amount, data);
-		_setAssetType(id, _type);
 	}
 
 	function mintBatch(
 		address to,
 		uint256[] memory ids,
 		uint256[] memory amounts,
-		bytes memory data,
-		uint256[] memory _types
+		bytes memory data
 	) public onlyMinter {
 		_mintBatch(to, ids, amounts, data);
-		_setAssetTypeBatch(ids, _types);
 	}
 
 	function setDevAddress(address _devAddress) public onlyOwner {
@@ -84,6 +80,14 @@ contract ClonesNeverDieAsset is Context, ERC1155, Ownable, Pausable, ERC1155Burn
 
 	function setProxyContract(address _ca) public onlyDev {
 		proxyContract = _ca;
+	}
+
+	function setAssetType(uint256 id, uint256 _type) public onlyDev {
+		_setAssetType(id, _type);
+	}
+
+	function setAssetTypeBatch(uint256[] memory ids, uint256[] memory _types) public onlyDev {
+		_setAssetTypeBatch(ids, _types);
 	}
 
 	function setBlacklist(address user, bool status) external onlyDev {

@@ -3,9 +3,9 @@
 pragma solidity ^0.8.7;
 
 interface IClonesNeverDieAsset {
-	function mint(address account, uint256 id, uint256 amount, bytes memory data, uint256 _type) external;
+	function mint(address account, uint256 id, uint256 amount, bytes memory data) external;
 
-	function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data, uint256[] memory _types) external;
+	function mintBatch(address to, uint256[] memory ids, uint256[] memory amounts, bytes memory data) external;
 
 	function burn(address account, uint256 id, uint256 value) external;
 
