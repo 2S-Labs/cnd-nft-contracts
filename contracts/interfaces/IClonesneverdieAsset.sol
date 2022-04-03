@@ -24,4 +24,6 @@ interface IClonesNeverDieAsset {
 	function balanceOf(address account, uint256 id) external view returns (uint256);
 
 	function balanceOfBatch(address[] memory accounts, uint256[] memory ids) external view returns (uint256[] memory);
+
+	function getAssetType(uint256 id) external view returns (uint256);
 }
