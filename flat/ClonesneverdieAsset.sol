@@ -1403,7 +1403,8 @@ pragma solidity ^0.8.10;
 
 contract ClonesNeverDieAsset is Context, ERC1155, Ownable, Pausable, ERC1155Burnable, ERC1155Supply {
 	using Strings for uint256;
-	
+
+	event SetAssetType(uint256 indexed id, uint256 indexed _type);
 	event SetBlacklist(address indexed user, bool status);
 
 	string private baseURI;
@@ -1413,6 +1414,24 @@ contract ClonesNeverDieAsset is Context, ERC1155, Ownable, Pausable, ERC1155Burn
 	address public mintContract;
 	address public proxyContract;
 
+	struct EquipStore {
+		uint256 background;
+		uint256 situation;
+		uint256 weapon;
+		uint256 body;
+		uint256 tattoo;
+		uint256 mouth;
+		uint256 eyes;
+		uint256 clothes;
+		uint256 accessory;
+		uint256 hat;
+		uint256 mask;
+		uint256 effect;
+	}
+
+	mapping(uint256 => EquipStore) internal equipState;
+  mapping(uint256 => bool) internal isEquipStateChanged;
+	mapping(uint256 => uint256) internal assetType;
 	mapping(address => bool) public blacklist;
 
 	modifier onlyDev() {
@@ -1424,7 +1443,7 @@ contract ClonesNeverDieAsset is Context, ERC1155, Ownable, Pausable, ERC1155Burn
 		require(_msgSender() == mintContract);
 		_;
 	}
-	
+
 	constructor(address _dev, string memory _baseURI) ERC1155(_baseURI) {
 		baseURI = _baseURI;
 		setDevAddress(_dev);
@@ -1472,6 +1491,14 @@ contract ClonesNeverDieAsset is Context, ERC1155, Ownable, Pausable, ERC1155Burn
 		proxyContract = _ca;
 	}
 
+	function setAssetType(uint256 id, uint256 _type) public onlyDev {
+		_setAssetType(id, _type);
+	}
+
+	function setAssetTypeBatch(uint256[] memory ids, uint256[] memory _types) public onlyDev {
+		_setAssetTypeBatch(ids, _types);
+	}
+
 	function setBlacklist(address user, bool status) external onlyDev {
 		blacklist[user] = status;
 		emit SetBlacklist(user, status);
@@ -1495,6 +1522,21 @@ contract ClonesNeverDieAsset is Context, ERC1155, Ownable, Pausable, ERC1155Burn
 			return true;
 		}
 		return super.isApprovedForAll(_owner, _operator);
+	}
+
+	function getAssetType(uint256 id) public view returns (uint256) {
+		return assetType[id];
+	}
+
+	function _setAssetType(uint256 _id, uint256 _type) internal {
+		assetType[_id] = _type;
+		emit SetAssetType(_id, _type);
+	}
+
+	function _setAssetTypeBatch(uint256[] memory _ids, uint256[] memory _types) internal {
+		for (uint256 i = 0; i < _ids.length; i++) {
+			_setAssetType(_ids[i], _types[i]);
+		}
 	}
 
 	function _beforeTokenTransfer(
